@@ -7,6 +7,6 @@ public interface Raster {
     int getBackgroundColor();
     void setPixel(int x, int y, int color);
     void setPixel(int x, int y);
-    int getPixel();
+    int getPixel(int x, int y);
     void clear();
 }
