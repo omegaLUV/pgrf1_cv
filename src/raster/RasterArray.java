@@ -40,8 +40,8 @@ public class RasterArray implements Raster {
     }
 
     @Override
-    public int getPixel() {
-        return 0;
+    public int getPixel(int x, int y) {
+        return array[x][y];
     }
 
     @Override
