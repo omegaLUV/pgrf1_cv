@@ -1,5 +1,6 @@
-
 import model.Line;
+import model.Point;
+import model.Polyline;
 import raster.LineRasterizer;
 import raster.LineRasterizerGraphics;
 import raster.Raster;
@@ -35,6 +36,7 @@ public class CanvasMouse {
     private LineRasterizer lineRasterizer;
     private List<Line> lines = new ArrayList<>();
     private int x1,y1;
+    private Polyline polyline = new Polyline();
 
     public CanvasMouse(int width, int height) {
         JFrame frame = new JFrame();
@@ -85,6 +87,11 @@ public class CanvasMouse {
                     lineRasterizer.rasterize(x1,y1,e.getX(),e.getY());
                     lines.add(new Line(x1,y1,e.getX(),e.getY()));
                 }
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    polyline.add(e.getX(), e.getY());
+
+                }
+                redraw();
             }
         });
 
@@ -94,6 +101,10 @@ public class CanvasMouse {
                 clear();
                 redraw();
                 lineRasterizer.rasterize(x1,y1,e.getX(),e.getY());
+                Point p = new Point(e.getX(), e.getY());
+                lineRasterizer.rasterize(polyline.getPoint(0), p, 0xff0000);
+                lineRasterizer.rasterize(polyline.getPoint(polyline.getSize()-1), p, 0xff0000);
+
                 panel.repaint();
             }
         });
@@ -106,10 +117,11 @@ public class CanvasMouse {
     public void redraw() {
 //        for(int i = 0; i < lines.size(); i++) {
 //            lineRasterizer.rasterize(lines.get(i));
+////        }
+//        for(Line line:lines) {
+//            lineRasterizer.rasterize(line);
 //        }
-        for(Line line:lines) {
-            lineRasterizer.rasterize(line);
-        }
+        lineRasterizer.rasterize(polyline);
         panel.repaint();
     }
 

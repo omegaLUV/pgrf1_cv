@@ -25,4 +25,19 @@ public class Line {
     public int getY2() {
         return y2;
     }
+
+//    private final Point a, b;
+//
+//    public Line(Point a, Point b) {
+//        this.a = a;
+//        this.b = b;
+//    }
+//
+//    public Point getA() {
+//        return a;
+//    }
+//
+//    public Point getB() {
+//        return b;
+//    }
 }
