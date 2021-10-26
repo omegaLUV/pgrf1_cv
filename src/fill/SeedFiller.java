@@ -4,6 +4,7 @@ import raster.Raster;
 
 public class SeedFiller extends Filler {
     private int seedX, seedY;
+    private int background;
 
 
     public SeedFiller(Raster raster) {
@@ -19,7 +20,7 @@ public class SeedFiller extends Filler {
     }
 
     public boolean isInside(int seedX, int seedY) {
-        return true;
+        return raster.getPixel(seedX,seedY) == background;
     }
 
     private void seedFill(int x, int y, int color) {
@@ -34,6 +35,7 @@ public class SeedFiller extends Filler {
 
     @Override
     public void fill() {
+        background = raster.getPixel(seedX, seedY);
         seedFill(seedX, seedY, fillColor);
     }
 }

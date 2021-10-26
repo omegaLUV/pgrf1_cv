@@ -4,7 +4,7 @@ import raster.Raster;
 
 public abstract class Filler {
     final protected Raster raster;
-    protected int fillColor;
+    protected int fillColor = 0xff;
 
     public Filler(Raster raster) {
         this.raster = raster;

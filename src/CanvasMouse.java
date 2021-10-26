@@ -1,4 +1,5 @@
 
+import fill.SeedFiller;
 import model.Line;
 import raster.LineRasterizer;
 import raster.LineRasterizerGraphics;
@@ -35,6 +36,7 @@ public class CanvasMouse {
     private LineRasterizer lineRasterizer;
     private List<Line> lines = new ArrayList<>();
     private int x1,y1;
+    private SeedFiller seedFiller;
 
     public CanvasMouse(int width, int height) {
         JFrame frame = new JFrame();
@@ -46,6 +48,7 @@ public class CanvasMouse {
 
         raster = new RasterBufferedImage(width, height);
         lineRasterizer = new LineRasterizerGraphics(raster);
+        seedFiller = new SeedFiller(raster);
 
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
@@ -72,8 +75,13 @@ public class CanvasMouse {
                 }
                 if (e.getButton() == MouseEvent.BUTTON2)
                     raster.setPixel(e.getX(), e.getY(), 0xff00ff);
-                if (e.getButton() == MouseEvent.BUTTON3)
-                    raster.setPixel(e.getX(), e.getY(), 0xffffff);
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    x1 = e.getX();
+                    y1 = e.getY();
+                    seedFiller.setSeedX(x1);
+                    seedFiller.setSeedY(y1);
+                    seedFiller.fill();
+                }
                 panel.repaint();
             }
         });
@@ -92,8 +100,8 @@ public class CanvasMouse {
             @Override
             public void mouseDragged(MouseEvent e) {
                 clear();
+                lineRasterizer.rasterize(x1, y1, e.getX(), e.getY());
                 redraw();
-                lineRasterizer.rasterize(x1,y1,e.getX(),e.getY());
                 panel.repaint();
             }
         });
