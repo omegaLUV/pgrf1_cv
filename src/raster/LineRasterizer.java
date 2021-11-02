@@ -22,7 +22,7 @@ public abstract class LineRasterizer {
 ////        rasterize(line.getX1(), line.getY1(), line.getX2(), line.getY2());
 ////    }
 ////
-    public void rasterize(Polyline polyline) {
+    public void rasterize(Line polyline) {
         for (int i = 0; i < polyline.getSize()-1; i++) {
             Point a = polyline.getPoint(i);
             Point b = polyline.getPoint(i+1);
