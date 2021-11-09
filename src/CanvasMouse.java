@@ -1,14 +1,14 @@
 
+import clip.Clipper;
 import model.Line;
+import model.Point;
+import model.Polyline;
 import raster.LineRasterizer;
 import raster.LineRasterizerGraphics;
 import raster.Raster;
 import raster.RasterBufferedImage;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -35,6 +35,8 @@ public class CanvasMouse {
     private LineRasterizer lineRasterizer;
     private List<Line> lines = new ArrayList<>();
     private int x1,y1;
+    private Polyline sourcePoly;
+    private Polyline clipPoly;
 
     public CanvasMouse(int width, int height) {
         JFrame frame = new JFrame();
@@ -46,6 +48,17 @@ public class CanvasMouse {
 
         raster = new RasterBufferedImage(width, height);
         lineRasterizer = new LineRasterizerGraphics(raster);
+
+        sourcePoly = new Polyline();
+        sourcePoly.getPoints().add(new Point(0,0));
+        sourcePoly.getPoints().add(new Point(0,100));
+        sourcePoly.getPoints().add(new Point(0,100));
+
+        clipPoly = new Polyline();
+        clipPoly.getPoints().add(new Point(0,0));
+        clipPoly.getPoints().add(new Point(120,100));
+        clipPoly.getPoints().add(new Point(0,0));
+
 
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
@@ -107,9 +120,11 @@ public class CanvasMouse {
 //        for(int i = 0; i < lines.size(); i++) {
 //            lineRasterizer.rasterize(lines.get(i));
 //        }
-        for(Line line:lines) {
-            lineRasterizer.rasterize(line);
-        }
+//        for(Line line:lines) {
+//            lineRasterizer.rasterize(line);
+//        }
+        Polyline result = Clipper.clip(sourcePoly, clipPoly);
+        lineRasterizer.rasterize(result); //implementovat polyline
         panel.repaint();
     }
 

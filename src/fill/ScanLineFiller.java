@@ -3,6 +3,9 @@ package fill;
 import model.Polyline;
 import raster.Raster;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ScanLineFiller extends Filler{
@@ -11,6 +14,8 @@ public class ScanLineFiller extends Filler{
     private List<BorderLine> borderLineList;
     private int ymin = Integer.MAX_VALUE;
     private int ymax = Integer.MIN_VALUE;
+    private int fillColor;
+    private int borderColor;
 
     public ScanLineFiller(Raster raster) {
         super(raster);
@@ -43,9 +48,29 @@ public class ScanLineFiller extends Filler{
 
     @Override
     public void fill() {
-        //nalezeni minY a maxY
+        List<Integer> intersections = new ArrayList<>();
 
+        for(int y = ymin; y <= ymax; y++) {
+            for (BorderLine borderLine : this.borderLineList) {
+                if (borderLine.hasIntersection(y)) {
+                    int intersectionX = borderLine.getIntersection(y);
+                    intersections.add(intersectionX);
+                }
+            }
+
+            //sort by X(samostatna metoda)
+            Collections.sort(intersections);
+            for (int i = 0; i < intersections.size(); i += 2) {
+                int x1 = intersections.get(i);
+                int x2 = intersections.get(i + 1);
+
+                for (int x = x1; x1 < x2; x++) {
+                    raster.setPixel(x, y, fillColor.getRGB());
+                }
+            }
+        }
     }
+
     private class BorderLine {
         int x1, y1, x2, y2;
 
@@ -70,10 +95,14 @@ public class ScanLineFiller extends Filler{
                 x2 = tempX;
             }
         }
+
+        public boolean hasIntersection(int y) {
+            return (y >= y1) && (y <= y2);
+        }
+
+        public int getIntersection(int y) {
+            //dodelat
+            return 0;
+        }
     }
 }
-
-
-//a=a+b
-//b=a-b
-//a=a-b
