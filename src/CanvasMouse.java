@@ -7,12 +7,13 @@ import raster.LineRasterizer;
 import raster.LineRasterizerGraphics;
 import raster.Raster;
 import raster.RasterBufferedImage;
+import transforms.Mat3;
+import transforms.Mat3Identity;
+import transforms.Mat3Transl2D;
+import transforms.Point2D;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class CanvasMouse {
     private int x1,y1;
     private Polyline sourcePoly;
     private Polyline clipPoly;
+    private Mat3 trans = new Mat3Identity();
 
     public CanvasMouse(int width, int height) {
         JFrame frame = new JFrame();
@@ -110,6 +112,23 @@ public class CanvasMouse {
                 panel.repaint();
             }
         });
+
+        panel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                super.keyTyped(e);
+                if(e.getKeyChar() == 'a')
+                    trans = trans.mul(new Mat3Transl2D(-10, 0));
+
+                if(e.getKeyChar() == 'w')
+                    trans = trans.mul(new Mat3Transl2D(0, -10));
+
+                clear();
+                redraw();
+            }
+        });
+        panel.requestFocus();
+        panel.requestFocusInWindow();
     }
 
     public void clear() {
@@ -117,12 +136,17 @@ public class CanvasMouse {
     }
 
     public void redraw() {
-//        for(int i = 0; i < lines.size(); i++) {
-//            lineRasterizer.rasterize(lines.get(i));
-//        }
-//        for(Line line:lines) {
-//            lineRasterizer.rasterize(line);
-//        }
+        for(Line line:lines) {
+            Point2D a = new Point2D(line.getX1(), line.getY1());
+            Point2D b = new Point2D(line.getX2(), line.getY2());
+            a = a.mul(trans);
+            b = b.mul(trans);
+            //
+            Line lineTransformed = new Line((int)a.getX(), (int)a.getY(), (int)b.getX(), (int)b.getY());
+            lineRasterizer.rasterize(line);
+            lineRasterizer.rasterize(lineTransformed, 0xff0000);
+        }
+
         Polyline result = Clipper.clip(sourcePoly, clipPoly);
         lineRasterizer.rasterize(result); //implementovat polyline
         panel.repaint();
