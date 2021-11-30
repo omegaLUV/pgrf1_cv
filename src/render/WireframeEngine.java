@@ -52,7 +52,13 @@ public class WireframeEngine extends Renderer{
         //dehomog
 
         //3D -> 2D
+
         //viewport
-        //lineRasterizer.rasterize()
+        int x1 = (int)(a.getX() + 1)*(raster.getWidth()/2);
+        int y1 = ((int)((-a.getY() + 1)*(raster.getHeight()/2)));
+        int x2 = (int)(b.getX() + 1)*(raster.getWidth()/2);
+        int y2 = ((int)((-b.getX() + 1)*(raster.getHeight()/2)));
+        //rasterize
+        rasterizer.rasterize(x1,y1,x2,y2);
     }
 }

@@ -9,9 +9,7 @@ import java.util.List;
 
 public abstract class Solid {
     protected List<Point3D> vertexBuffer;
-
     protected List<Integer> indexBuffer;
-
     protected Mat4 modelTransformation = new Mat4Identity();
 
     public Solid() {
@@ -29,5 +27,9 @@ public abstract class Solid {
 
     public Mat4 getModel() {
         return modelTransformation;
+    }
+
+    public void setModel(Mat4 modelTransformation) {
+        this.modelTransformation = modelTransformation;
     }
 }

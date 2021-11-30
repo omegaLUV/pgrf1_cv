@@ -15,8 +15,13 @@ abstract class Renderer {
 
     public void render(Solid solid) {}
     public void render(Scene scene){}
-    public Renderer(Raster raster, LineRasterizer rasterizer) {}
+    public Renderer(Raster raster, LineRasterizer rasterizer) {
+        this.raster = raster;
+        this.rasterizer = rasterizer;
+    }
 
 
-
+    public void setView(Mat4 view) {
+        this.view = view;
+    }
 }

@@ -3,14 +3,14 @@ import clip.Clipper;
 import model.Line;
 import model.Point;
 import model.Polyline;
+import model3D.Edge;
+import model3D.Solid;
 import raster.LineRasterizer;
 import raster.LineRasterizerGraphics;
 import raster.Raster;
 import raster.RasterBufferedImage;
-import transforms.Mat3;
-import transforms.Mat3Identity;
-import transforms.Mat3Transl2D;
-import transforms.Point2D;
+import render.WireframeEngine;
+import transforms.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -39,6 +39,12 @@ public class CanvasMouse {
     private Polyline sourcePoly;
     private Polyline clipPoly;
     private Mat3 trans = new Mat3Identity();
+    Solid solid = new Edge();
+    private Camera camera = new Camera()
+            .withPosition(new Vec3D(10,0,0))
+            .withAzimuth(Math.PI)
+            .withZenith(0)
+            .withFirstPerson(true);
 
     public CanvasMouse(int width, int height) {
         JFrame frame = new JFrame();
@@ -115,14 +121,23 @@ public class CanvasMouse {
 
         panel.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
-                super.keyTyped(e);
-                if(e.getKeyChar() == 'a')
-                    trans = trans.mul(new Mat3Transl2D(-10, 0));
-
-                if(e.getKeyChar() == 'w')
-                    trans = trans.mul(new Mat3Transl2D(0, -10));
-
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+//                if(e.getKeyChar() == 'a')
+//                    trans = trans.mul(new Mat3Transl2D(-10, 0));
+//
+//                if(e.getKeyChar() == 'w')
+//                    trans = trans.mul(new Mat3Transl2D(0, -10));
+//
+                double step = 0.1;
+                if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    camera = camera.left(step);
+                }
+                //...
+                if(e.getKeyCode() == KeyEvent.VK_M) {
+                    Mat4 m = solid.getModel().mul(new Mat4RotX(0.01));
+                    solid.setModel(m);
+                }
                 clear();
                 redraw();
             }
@@ -149,6 +164,20 @@ public class CanvasMouse {
 
         Polyline result = Clipper.clip(sourcePoly, clipPoly);
         lineRasterizer.rasterize(result); //implementovat polyline
+        WireframeEngine engine = new WireframeEngine(raster, lineRasterizer);
+//        Point3D a = new Point3D(-1,-1,0);
+//        Point3D b = new Point3D(1,1,1);
+//        engine.render(a,b);
+
+        Vec3D e = new Vec3D(10,0,0);
+        Vec3D v = new Vec3D(-1, 0,0);
+        Vec3D u = new Vec3D(0,0,1);
+        //Mat4 view = new Mat4ViewRH(e,v,u);
+        //engine.setView(view);
+        //engine.setProjection(new Mat4OrthoRH(6,4,0.1,30));
+        engine.setView(camera.getViewMatrix());
+        engine.render(solid);
+
         panel.repaint();
     }
 
